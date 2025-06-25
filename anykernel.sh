@@ -4,7 +4,7 @@
 ### AnyKernel setup
 # global properties
 properties() { '
-kernel.string=Wild Plus Kernel by TheWildJames or Morgan Weedman
+kernel.string=⛈️ ThunderBlast⚡ android12-5.10.X-lts-SukiSU GKI kernel with susfs 1.5.8+kpm by @AltafYafai
 do.devicecheck=0
 do.modules=0
 do.systemless=0
