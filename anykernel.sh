@@ -51,6 +51,7 @@ if [ -f "split_img/ramdisk.cpio" ]; then
     write_boot
 else
     flash_boot
+    [ -f dtbo.img ] && flash_dtbo
 fi
 ## end boot install
 
