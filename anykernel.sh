@@ -4,14 +4,14 @@
 ### AnyKernel setup
 # global properties
 properties() { '
-kernel.string=⛈️ ThunderBlast⚡ android12-5.10.X-lts-SukiSU GKI kernel with susfs 1.5.8+kpm by @AltafYafai
+kernel.string=Sky Linux 6.12 Kernel for Redmi 12 5G by @AltafYafai
 do.devicecheck=0
-do.modules=1
+do.modules=0
 do.systemless=0
 do.cleanup=1
 do.cleanuponabort=0
-device.name1=
-device.name2=
+device.name1=sky
+device.name2=redmi12_5g
 device.name3=
 device.name4=
 device.name5=
@@ -46,36 +46,25 @@ $ksu_supported || abort "  -> Non-GKI device, abort."
 
 # boot install
 split_boot
-if [ -f "split_img/ramdisk.cpio" ]; then
+if [ -f "$SPLITIMG/ramdisk.cpio" ] || [ -f "split_img/ramdisk.cpio" ]; then
     unpack_ramdisk
     write_boot
 else
     flash_boot
-    [ -f dtbo.img ] && flash_dtbo
 fi
 ## end boot install
 
 ## vendor_dlkm install for .ko modules
 if [ -d modules ] && [ "$(ls -A modules/*.ko 2>/dev/null)" ]; then
-    ui_print " " "Installing kernel modules to vendor_dlkm..."
-    block=vendor_dlkm
-    is_slot_device=auto
-    reset_ak
-    split_boot
-    if [ -f "split_img/ramdisk.cpio" ]; then
-        unpack_ramdisk
-        mkdir -p ramdisk/lib/modules
-        cp -f modules/*.ko ramdisk/lib/modules/
-        write_boot
+    ui_print " " "Attempting to install kernel modules to vendor_dlkm..."
+    mount -o rw /vendor_dlkm 2>/dev/null || mount -o rw /dev/block/mapper/vendor_dlkm$SLOT /vendor_dlkm 2>/dev/null || true
+    if [ -d /vendor_dlkm/lib/modules ]; then
+        cp -f modules/*.ko /vendor_dlkm/lib/modules/
+        umount /vendor_dlkm 2>/dev/null || true
+        ui_print "  -> Modules copied to /vendor_dlkm/lib/modules"
     else
-        ui_print " " "Extracting modules directly..."
-        mount -o rw /vendor_dlkm 2>/dev/null || mount -o rw /dev/block/mapper/vendor_dlkm$SLOT /vendor_dlkm 2>/dev/null || true
-        if [ -d /vendor_dlkm/lib/modules ]; then
-            cp -f modules/*.ko /vendor_dlkm/lib/modules/
-            umount /vendor_dlkm 2>/dev/null || true
-        else
-            ui_print " " "vendor_dlkm mounting not available, modules copied into boot image."
-        fi
+        ui_print "  -> vendor_dlkm not directly mountable, skipping."
     fi
 fi
 ## end vendor_dlkm install
+
