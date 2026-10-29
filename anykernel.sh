@@ -52,6 +52,7 @@ if [ -f "$SPLITIMG/ramdisk.cpio" ] || [ -f "split_img/ramdisk.cpio" ]; then
 else
     flash_boot
 fi
+[ -f dtbo.img ] && flash_dtbo
 ## end boot install
 
 ## vendor_dlkm install for .ko modules
